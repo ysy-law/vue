@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box{ width: 980px; margin: 0 auto; }
+        .box-color{ background: #999999; color: #fff; }
+    </style>
+    <script src="vue.js"></script>
+</head>
+<body>
+    <div id="box" class="box" :class="boxClasses">
+        <span>{{ displayName }}</span>
+        <span v-html="displayName"></span>
+        <button type="button" v-bind:disabled="disabled">按钮</button>
+        <span>{{ computed }}</span>
+        <span :style="timeSpanClass">{{ timeCurrent }}</span>
+        <span :style="[timeSpanClass, timeNowSpanClass]">{{ timeNow() }}</span>
+        <span v-if="isShowSpan">可见</span>
+        <span v-else>不可见</span>
+        <ul>
+            <li v-for="(item, index) in items" :key="item.id">{{ item.name }}{{ index }}</li>
+        </ul>
+        <form>
+            <input type="radio" value="radioValue" v-model="radioForm">
+
+            <input type="radio" value="radioValues" v-model="radioForm">
+
+            <span>{{ radioForm }}</span>
+        </form>
+    </div>
+    <textarea></textarea>
+    <script>
+        var data = {
+            isEmpty: true,
+            displayName: '<h1>ci</h1>',
+            disabled: true,
+            computedData: 'computedData',
+            boxClass: {
+                theme: true
+            },
+            timeSpanClass: {
+                color: '#F00'
+            },
+            timeNowSpanClass: {
+                fontSize: '20px'
+            },
+            isShowSpan: true,
+            items: [
+                { name: 'a', id: '0' },
+                { name: 'b', id: '1'},
+                { name: 'c', id: '2' }
+            ],
+            radioForm: ''
+        };
+        var vm = new Vue({
+            el: '.box',
+            data: data,
+            computed: {
+                computed: function () {
+                    return this.computedData.split('').reverse().join('');
+                },
+                timeCurrent: function () {
+                    return Date.now();
+                },
+                boxClasses: function () {
+                    return {
+                        'box-color': this.boxClass.theme
+                    }
+                }
+            },
+            methods: {
+                timeNow: function () {
+                    return Date.now();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

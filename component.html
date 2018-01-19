@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{ margin: 0; padding: 0 }
+        .box {width: 980px;margin: 0 auto;}
+        .box .header{ height: 50px; background: #999; color: #FFF; font-size: 14px; }
+        .box .header .login{ margin-left: 10px; padding-top: 5px; }
+        .box .header .login a{ margin-right: 5px; text-decoration: none; }
+    </style>
+    <script src="vue.js"></script>
+</head>
+<body>
+<div id="box" class="box">
+    <box-header></box-header>
+    <box-body></box-body>
+    <student-table title="2年级1班学生分数表"></student-table>
+</div>
+
+<script>
+    Vue.component('box-header', {
+        template:
+            '<div class="header">' +
+                '<div class="login">' +
+                    '<a href="javascript:;" @click="login">{{ name ? "您好，" + name : "登录" }}</a>' +
+                    '<a href="javascript:;" @click="exit">{{ name ? "退出" : "注册" }}</a>' +
+                '</div>' +
+            '</div>',
+        data: function() {
+            return {
+                name: '小明'
+            };
+        },
+        methods: {
+            exit: function () {
+                this.name = '';
+            },
+            login: function () {
+                this.name = '小明'
+            }
+        }
+    });
+    var Child = {
+        template:
+            '<div class="body">' +
+                '<div>守家</div>' +
+            '</div>'
+    };
+    var Table = {
+        props: ['title'],
+        template:
+            '<table border="1">' +
+                '<caption>{{ title }}</caption>' +
+                '<thead>' +
+                    '<tr><th>学号</th><th>姓名</th><th>性别</th><th>分数</th></tr>' +
+                '</thead>'+
+                '<tbody>' +
+                    '<tr><td>001</td><td>张三</td><td>男</td><td>78</td></tr>' +
+                    '<tr><td>002</td><td>李四</td><td>男</td><td>95</td></tr>' +
+                    '<tr><td>003</td><td>李华</td><td>女</td><td>85</td></tr>' +
+                '</tbody>' +
+            '</table>'
+    };
+    var vm = new Vue({
+        el: '#box',
+        components: {
+            'box-body': Child,
+            'student-table': Table
+        }
+    });
+</script>
+</body>
+</html>

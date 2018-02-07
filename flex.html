@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>flex布局</title>
+    <style>
+        *{ margin: 0; padding: 0; }
+        .wrap{ width: 980px; margin: 0 auto; }
+        .wrap .title{ padding: 10px 0; text-align: center; }
+        .wrap .box{ padding: 10px; list-style: none; display: flex; background: #000; height: 100px; }
+        .wrap .box li{ color: #FFF; }
+        .wrap .optionsBox{ background: #f3f3f3; }
+        .wrap .optionsBox p{ padding: 10px; }
+        .wrap .optionsBox .info{ font-size: 18px; color: #00bd17; }
+        .btn{ margin: 0 10px; padding: 5px 10px; border: none; background: #00bd17; cursor: pointer; }
+        .form-group{ padding: 10px; }
+        .form-group input{ margin: 0 10px; }
+        .margin0{ margin: 0; }
+        .active{ border: 1px solid red; }
+        .ghost-center {
+            background: white;
+            width: 240px;
+            height: 200px;
+            margin: 20px;
+            color: white;
+            resize: vertical;
+            overflow: auto;
+            padding: 20px;
+        }
+        .ghost-center::before {
+            content: " ";
+            display: inline-block;
+            height: 100%;
+            width: 1%;
+            vertical-align: middle;
+        }
+        .ghost-center p {
+            display: inline-block;
+            vertical-align: middle;
+            width: 190px;
+            margin: 0;
+            padding: 20px;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1 class="title">flex布局</h1>
+        <div class="optionsBox">
+            <p class="info">容器的属性</p>
+            <p>flex-direction</p>
+            <div>
+                <button class="btn">row</button><button class="btn">row-reverse</button><button class="btn">column</button><button class="btn">column-reverse</button>
+            </div>
+            <p>flex-wrap</p>
+            <div>
+                <button class="btn">nowrap</button><button class="btn">wrap</button><button class="btn">wrap-reverse</button>
+            </div>
+            <p>justify-content</p>
+            <div>
+                <button class="btn">flex-start</button><button class="btn">flex-end</button><button class="btn">center</button><button class="btn">space-between</button><button class="btn">space-around</button>
+            </div>
+            <p>align-items</p>
+            <div>
+                <button class="btn">flex-start</button><button class="btn">flex-end</button><button class="btn">center</button><button class="btn">baseline</button><button class="btn">stretch</button>
+            </div>
+            <p>align-content</p>
+            <div>
+                <button class="btn">flex-start</button><button class="btn">flex-end</button><button class="btn">center</button><button class="btn">space-between</button><button class="btn">space-around</button><button class="btn">stretch</button>
+            </div>
+        </div>
+        <div class="optionsBox">
+            <p class="info">项目的属性</p>
+            <div class="form-group">
+                <label>order</label><input placeholder="integer" />
+            </div>
+            <div class="form-group">
+                <label>flex-grow</label><input />
+            </div>
+            <div class="form-group">
+                <label>flex-shrink</label><input />
+            </div>
+            <div class="form-group">
+                <label>flex-basis</label><input />
+            </div>
+            <div class="form-group">
+                <label>align-self</label><input />
+            </div>
+            <div class="form-group">
+                <button class="btn margin0" id="save">保存</button>
+            </div>
+            <p>ps: flex为flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto 后两个属性可选</p>
+        </div>
+        <ul class="box">
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">111111111</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">222222222</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">3333333333</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">44444444444444</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">555555555555555</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">666666666666</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">777777777777777</li>
+            <li style="order: 0; flex-grow: 0; flex-shrink: 1; flex-basis: auto; align-self: auto;">88888888888</li>
+        </ul>
+    </div>
+    <!-- <div class="ghost-center">
+        <p>I'm vertically centered multiple lines of text in a container. Centered with a ghost pseudo element</p>
+    </div>-->
+<script>
+    let optionsBox = document.getElementsByClassName('optionsBox');
+    let box = document.getElementsByClassName('box');
+    let inputList = optionsBox[1].getElementsByTagName('input');
+    let saveBtn = document.getElementById('save');
+    let currentTarget;
+    optionsBox[0].addEventListener('click', function (e) {
+        let target = e.target;
+        if(target.nodeName.toLowerCase() === 'button'){
+            let p = target.parentNode.previousElementSibling;
+            box[0].style[p.innerHTML] = target.innerHTML;
+        }
+    });
+    box[0].addEventListener('click', function (e) {
+        let target = e.target;
+        let itemProp = ['order', 'flex-grow', 'flex-shrink', 'flex-basis', 'align-self'];
+        if(target.nodeName.toLowerCase() === 'li'){
+            let style = target.style;
+            currentTarget = target;
+            itemProp.forEach(function (item, index) {
+                inputList[index].value = style[item];
+            });
+            let liList = target.parentNode.children;
+            for(let i = 0, len = liList.length; i < len; i++){
+                liList[i].classList.remove('active');
+            }
+            target.classList.add('active');
+        }
+    });
+    saveBtn.addEventListener('click', function () {
+        if(!currentTarget){
+            return;
+        }
+        for(let i = 0, len = inputList.length; i < len; i++) {
+            currentTarget.style[inputList[i].previousElementSibling.innerHTML] = inputList[i].value;
+        }
+    });
+</script>
+</body>
+</html>

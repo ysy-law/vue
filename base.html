@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue基础demo</title>
+    <style>
+        .content{ color: red; }
+        .content-blue{ color: blue; }
+        .hide{ display: none; }
+        .default{ color: green; }
+        .back{ background: #999; }
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s;
+        }
+        .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0;
+        }
+
+        #app{
+            position: absolute;
+            width:20px;
+            height:20px;
+            background: red;
+        }
+        .app-to-end{
+            top: 100px;
+        }
+        .animate-on-transforms{
+            transition: all 2s;
+        }
+    </style>
+    <script src="vue.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+    var app = document.getElementById('app');
+    var first = app.getBoundingClientRect();
+    app.classList.add('app-to-end');
+    var last = app.getBoundingClientRect();
+    var invert = first.top - last.top;
+    //使元素看起来好像在起始点
+    app.style.transform = `translateY(${invert}px)`;
+    requestAnimationFrame(function() {
+        //启用tansition，并移除翻转的改变
+        app.classList.add('animate-on-transforms');
+        app.style.transform = '';
+    });
+    app.addEventListener('transitionend', () => {
+        app.classList.remove('animate-on-transforms');
+    })
+</script>
+<!-- Vue组件的生命周期：
+        new Vue()
+        -> Init Events & Lifecycle  -> beforeCreate
+        -> Init injections & reactivity -> created
+        -> has el option? -> no -> when vm.$mount(el) is called
+        -> yes -> has template option ?
+        -> yes ->
+-->
+
+<!--文本 使用JavaScript表达式-->
+    <div id="div1">
+        <h1>{{ title ? title : '默认标题' }}</h1>
+        <p v-once>
+            <span>{{ content }}</span>
+        </p>
+    </div>
+<script>
+    var vm1 = new Vue({
+        el: '#div1',
+        data: {
+            title: '标题1',
+            content: '内容'
+        }
+    });
+</script>
+
+<!--原始html-->
+<div id="div2">
+    <h1>{{ title }}</h1>
+    <p v-html="content"></p>
+</div>
+<script>
+    var vm2 = new Vue({
+        el: '#div2',
+        data: {
+            title: '标题1',
+            content: '<span>内容</span>'
+        }
+    });
+</script>
+
+<!--特性-->
+<div id="div3">
+    <h1 v-bind:title="title">{{ title }}</h1>
+    <p :class="styleContent" v-html="content"></p>
+</div>
+<script>
+    var vm3 = new Vue({
+        el: '#div3',
+        data: {
+            title: '标题1',
+            content: '<span>内容</span>',
+            styleContent: 'content'
+        }
+    });
+</script>
+
+<!--计算属性 vs 方法 vs 侦听属性 计算属性的setter 侦听属性适用场合-->
+<div id="div4">
+    <h1 v-bind:title="title">{{ computedTitle }}</h1>
+    <p :class="styleContent"><span>{{ content }}</span></p>
+    <p>
+        <span>计算属性缓存</span>
+        <span>{{ computedTimeNow }}</span>
+    </p>
+    <p>
+        <span>方法</span>
+        <span>{{ methodsTimeNow() }}</span>
+    </p>
+    <p>
+        <span>计算属性</span>
+        <span>{{ computedTitleContent }}</span>
+    </p>
+    <p>
+        <span>侦听属性</span>
+        <span>{{ tContent }}</span>
+    </p>
+    <p>
+        <label>侦听器属性应用</label>
+        <input v-model="question" />
+        <p>{{ answer }}</p>
+    </p>
+</div>
+<script>
+    var vm4 = new Vue({
+        el: '#div4',
+        data: {
+            title: '标题1',
+            content: '内容',
+            styleContent: 'content',
+            tContent: '标题1内容',
+            question: '',
+            answer: ''
+        },
+        computed: {
+            computedTitle: function () {
+                return this.title.replace(/\d/g, '');
+            },
+            computedTimeNow: function () {
+                return new Date();
+            },
+            computedTitleContent: function () {
+                return this.title + this.content;
+            },
+            computedStyleContent: {
+                get: function () {
+                    return this.styleContent;
+                },
+                set: function (val) {
+                    this.styleContent = val;
+                }
+            }
+        },
+        methods: {
+            methodsTitle: function () {
+                return this.title.replace(/\d/g, '');
+            },
+            methodsTimeNow: function () {
+                return new Date();
+            }
+        },
+        watch: {
+            title: function (val) {
+                this.tContent = val + this.content;
+            },
+            content: function (val) {
+                this.tContent = this.title + val;
+            },
+            question: function () {
+                this.answer = 'please wait a little...';
+                setTimeout(() => {
+                    this.answer = 'ok success ' + this.question;
+                }, 2000);
+            }
+        }
+    });
+</script>
+
+<!--class style特性增强-->
+<div id="div5">
+    <h1 v-bind:title="title">{{ title }}</h1>
+    <p :class="styleContent" v-html="content"></p>
+    <p :class="{content: isHide}">class有无取决于数据属性是否为真</p>
+    <p :class="styleObj">class有无取决于数据属性是否为真</p>
+    <p :class="styleObjs">class有无取决于数据属性是否为真</p>
+    <p :class="[styleContent]">class有无取决于数据属性是否为真</p>
+    <p :class="[styleContent, styleBack ? 'back' : '']">class有无取决于数据属性是否为真</p>
+    <p :class="[styleContent, { back: styleBack }]">class有无取决于数据属性是否为真</p>
+    <p :style="{ color: colorGreen }">style用法</p>
+    <p :style="sObj">style用法</p>
+    <p :style="[sObj, qObj]">style用法</p>
+    <div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }">lll</div>
+</div>
+<script>
+    var vm5 = new Vue({
+        el: '#div5',
+        data: {
+            title: '标题1',
+            content: '<span>内容</span>',
+            styleContent: 'content',
+            isHide: true,
+            styleObj: {
+                content: true
+            },
+            styleBack: false,
+            colorGreen: 'green',
+            sObj: {
+                color: 'green'
+            },
+            qObj: {
+                fontSize: '20px'
+            }
+        },
+        computed: {
+            styleObjs: function () {
+                return {
+                    content: this.styleContent === 'content'
+                }
+            }
+        }
+    });
+</script>
+
+<!-- v-if v-else-if v-else v-show -->
+<div id="div6">
+    <p v-if="a">A</p>
+    <p v-else-if="b">B</p>
+    <p v-else-if="c">C</p>
+    <p v-else>not A/B/C</p>
+    <p v-show="show">v-show</p>
+</div>
+<script>
+    var vm6 = new Vue({
+        el: '#div6',
+        data: {
+            a: 0,
+            b: 0,
+            c: 0,
+            show: false
+        }
+    });
+</script>
+
+<!-- 列表渲染v-for 数组 对象数据源-->
+<div id="div7">
+    <ul>
+        <li v-for="(fruit, index) in fruitList" :key="index">{{ index + 1 + '、' + fruit }} </li>
+    </ul>
+    <ul>
+        <li v-for="(fruit, key) in fruitObj">{{ key + '：' + fruit }}</li>
+    </ul>
+</div>
+<script>
+    var vm7 = new Vue({
+        el: '#div7',
+        data: {
+            fruitList: ['苹果', '香蕉', '鸭梨'],
+            fruitObj: {
+                apple: '苹果',
+                banana: '香蕉',
+                pear : '鸭梨'
+            }
+        }
+    });
+</script>
+
+<!-- 监听事件v-on -->
+<div id="div8">
+    <button v-on:click="counter += 1">click</button>
+    <p>number is {{ counter }}</p>
+    <button v-on:click="greet">greet</button>
+</div>
+<script>
+    var vm8 = new Vue({
+        el: '#div8',
+        data: {
+            counter: 0
+        },
+        methods: {
+            greet: function (event) {
+                alert('Greet');
+            }
+        }
+    });
+</script>
+
+<!-- 表单输入绑定v-model -->
+<div id="div9">
+    <input v-model.trim.lazy="message" placeholder="edit me" >
+    <p>message is {{ message }}</p>
+</div>
+<script>
+    var vm9 = new Vue({
+        el: '#div9',
+        data: {
+            message: ''
+        }
+    });
+</script>
+
+<!-- 组件 component -->
+<div id="div10">
+    <span>{{ counter }}</span>
+    <child message="hello child" v-bind:message="dynamicProp" v-on:increment="incrementTotal"></child>
+</div>
+<script>
+    Vue.component('child', {
+        props: ['message'],
+        template: '<div><span>{{ message }}</span><button v-on:click="incrementCounter">click</button></div>',
+        methods: {
+            incrementCounter: function () {
+                this.$emit('increment');
+            }
+        }
+    });
+    var vm10 = new Vue({
+        el: '#div10',
+        data: {
+            dynamicProp: 'dynamicProp',
+            counter: 0
+        },
+        methods: {
+            incrementTotal: function () {
+                this.counter++;
+            }
+        }
+    });
+</script>
+
+<!-- 过渡动画 -->
+<div id="div11">
+    <button v-on:click="show = !show">Toggle</button>
+    <transition name="fade">
+        <p v-if="show">Hello</p>
+    </transition>
+</div>
+<script>
+    new Vue({
+        el: '#div11',
+        data: {
+            show: true
+        }
+    });
+</script>
+
+<!-- 自定义指令 -->
+<div id="div12">
+    <input v-focus />
+</div>
+<script>
+    Vue.directive('focus', {
+        inserted: function (el) {
+            el.focus();
+        }
+    });
+    new Vue({
+        el: '#div12'
+    });
+</script>
+
+</body>
+</html>

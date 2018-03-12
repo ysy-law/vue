@@ -14,9 +14,11 @@
 </head>
 <body>
 <div id="box" class="box">
+    <p>目前分数为：{{ score }}</p>
+    <label>请输入表格标题</label><input v-model="tableTitle" />
     <box-header></box-header>
     <box-body></box-body>
-    <student-table title="2年级1班学生分数表"></student-table>
+    <student-table :titles="tableTitle" title="tableTitle" @set_score="setScore"></student-table>
 </div>
 
 <script>
@@ -49,25 +51,40 @@
             '</div>'
     };
     var Table = {
-        props: ['title'],
+        props: ['titles'],
         template:
             '<table border="1">' +
-                '<caption>{{ title }}</caption>' +
+                '<caption>{{ titles }}</caption>' +
                 '<thead>' +
                     '<tr><th>学号</th><th>姓名</th><th>性别</th><th>分数</th></tr>' +
                 '</thead>'+
                 '<tbody>' +
-                    '<tr><td>001</td><td>张三</td><td>男</td><td>78</td></tr>' +
-                    '<tr><td>002</td><td>李四</td><td>男</td><td>95</td></tr>' +
-                    '<tr><td>003</td><td>李华</td><td>女</td><td>85</td></tr>' +
+                    '<tr><td>001</td><td>张三</td><td>男</td><td @click="getScore">78</td></tr>' +
+                    '<tr><td>002</td><td>李四</td><td>男</td><td @click="getScore">95</td></tr>' +
+                    '<tr><td>003</td><td>李华</td><td>女</td><td @click="getScore">85</td></tr>' +
                 '</tbody>' +
-            '</table>'
+            '</table>',
+        methods: {
+            getScore: function ($event) {
+                var score = $event.target.innerHTML;
+                this.$emit('set_score', score);
+            }
+        }
     };
     var vm = new Vue({
         el: '#box',
+        data: {
+            tableTitle: '2年级1班分数表',
+            score: 0
+        },
         components: {
             'box-body': Child,
             'student-table': Table
+        },
+        methods: {
+            setScore: function (value) {
+                this.score = value;
+            }
         }
     });
 </script>

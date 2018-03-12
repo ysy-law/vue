@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{ margin: 0; padding: 0; box-sizing: border-box; }
+        html, body{ height: 100%; }
+        .wrap{ display: flex; flex-direction: column; height: 100%; }
+        .wrap div{ flex: 1; }
+        .wrap div ul{ width: 100%; height: 100%; overflow: auto; display: inline-block; min-width: 100%; position: relative; }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+            opacity: 0;
+            border-radius: 50px;
+            background-color: rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div><ul>123</ul></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{ margin: 0; padding: 0; }
+        html{ font-size: 62.5%; }
+        html, body, .app{ width: 100%; }
+        .circle{ width: 100px; height: 100px; background: #000; border-radius: 50%; line-height: 100px; text-align: center; color: #FFF; }
+        .green{ background: green; }
+        .blue{ background: blue; }
+    </style>
+    <script src="vue1.js"></script>
+</head>
+<body>
+<div id="app" class="app">
+    <p>{{ showNum }}</p>
+    <p>{{ changeNum }}</p>
+    <base-circle :background="color" :text="num" v-on:showtext="showDetail" @click.native="alertMsg"></base-circle>
+    <base-circle v-bind="obj" class="true" v-on:showText="showDetail"></base-circle>
+    <base-circle :text.sync="changeNum"></base-circle>
+    <form-item v-model="changeNum">
+        <input type="checkbox" name="fruit" />香蕉
+        <input type="checkbox" name="fruit" />苹果
+        <input type="checkbox" name="fruit" />鸭梨
+        <input type="radio" slot="radio" name="male" /><span slot="radio">男</span>
+        <input type="radio" slot="radio" name="male" /><span slot="radio">女</span>
+        <li slot="item" slot-scope="props">{{ props.text }}</li>
+    </form-item>
+    <keep-alive>
+        <component :is="myhome"></component>
+    </keep-alive>
+</div>
+<script type="text/javascript">
+    // 全局注册组件
+    Vue.component('baseCircle', {
+        props: ['text', 'background'],
+        template:  '<div class="circle" :class="obj.background" @click="getText">{{ obj.text }}</div>',
+        data: function () {
+            return {
+
+            };
+        },
+        computed: {
+            obj: function () {
+                let text, background;
+                if(typeof this.text === 'object'){
+                    text = this.text.text;
+                    background = this.text.background;
+                }else {
+                    text = this.text;
+                    background = this.background;
+                }
+                return { text, background };
+            }
+        },
+        methods: {
+            getText: function () {
+                this.$emit('showtext', this.obj.text);
+            },
+            updateData: function () {
+                this.$emit('update:text', '0');
+            }
+        }
+    });
+    Vue.component('formItem', {
+        template: `<div><input v-bind:value="value" v-on:input="updateValue"  /><slot></slot><slot name="radio"></slot><ul><slot name="item" v-for="item in items" :text="item"></slot></ul></div>`,
+        props: ['value'],
+        data: function () {
+            return {
+                items: ['a', 'b', 'c']
+            };
+        },
+        methods: {
+            updateValue: function (e) {
+                this.$emit('input', e.target.value);
+            }
+        }
+    });
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            color: 'green',
+            num: '1',
+            obj: {
+                text: '2',
+                background: 'blue'
+            },
+            showNum: '',
+            changeNum: 'default',
+            myhome: 'home'
+        },
+        methods: {
+            showDetail: function (data) {
+                this.showNum = data;
+                //this.changeNum = data + Date.now();
+            },
+            alertMsg: function () {
+                alert(this.showNum);
+            }
+        },
+        components: {
+            home: {
+                template: '<p>home</p>'
+            },
+            posts: {
+                template: '<h1>posts</h1>'
+            }
+        }
+    });
+</script>
+</body>
+</html>

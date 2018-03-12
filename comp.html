@@ -19,7 +19,7 @@
     <p>{{ changeNum }}</p>
     <base-circle :background="color" :text="num" v-on:showtext="showDetail" @click.native="alertMsg"></base-circle>
     <base-circle v-bind="obj" class="true" v-on:showText="showDetail"></base-circle>
-    <base-circle :text.sync="changeNum"></base-circle>
+    <base-circle :text.sync="changeNum" ref="blueCircle"></base-circle>
     <form-item v-model="changeNum">
         <input type="checkbox" name="fruit" />香蕉
         <input type="checkbox" name="fruit" />苹果
@@ -31,7 +31,18 @@
     <keep-alive>
         <component :is="myhome"></component>
     </keep-alive>
+    <async-obj></async-obj>
+    <base-circle inline-template>
+       <div>
+           <p>1</p>
+           <p>2</p>
+       </div>
+    </base-circle>
+    <hello-world></hello-world>
 </div>
+<script type="text/x-template" id="hello">
+    <p>hello world</p>
+</script>
 <script type="text/javascript">
     // 全局注册组件
     Vue.component('baseCircle', {
@@ -78,6 +89,16 @@
             }
         }
     });
+    Vue.component('asyncObj', function (resolve, reject) {
+        setTimeout(function () {
+            resolve({
+                template: '<h1>异步调用实例</h1>'
+            });
+        }, 3000);
+    });
+    Vue.component('helloWorld', {
+        template: '#hello'
+    });
     var vm = new Vue({
         el: '#app',
         data: {
@@ -109,6 +130,7 @@
             }
         }
     });
+    console.log(vm.$refs.blueCircle);
 </script>
 </body>
 </html>

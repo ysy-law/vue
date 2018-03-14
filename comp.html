@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <!--<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">-->
     <style>
         *{ margin: 0; padding: 0; }
         html{ font-size: 62.5%; }
@@ -10,6 +11,8 @@
         .circle{ width: 100px; height: 100px; background: #000; border-radius: 50%; line-height: 100px; text-align: center; color: #FFF; }
         .green{ background: green; }
         .blue{ background: blue; }
+        .fade-enter-active, .fade-leave-active{ transition: opacity .5s; }
+        .fade-enter, .fade-leave-to{ opacity: 0; }
     </style>
     <script src="vue1.js"></script>
 </head>
@@ -39,6 +42,13 @@
        </div>
     </base-circle>
     <hello-world></hello-world>
+    <transition name="fade" enter-active-class="animated tada" leave-active-class="animated bounceOutRight" >
+        <p v-if="animation">fade fade fade</p>
+    </transition>
+    <base-circle v-bind="obj2"></base-circle>
+    <heading :level="1">
+        <a href="#">Hello world!</a>
+    </heading>
 </div>
 <script type="text/x-template" id="hello">
     <p>hello world</p>
@@ -76,7 +86,7 @@
         }
     });
     Vue.component('formItem', {
-        template: `<div><input v-bind:value="value" v-on:input="updateValue"  /><slot></slot><slot name="radio"></slot><ul><slot name="item" v-for="item in items" :text="item"></slot></ul></div>`,
+        template: `<div><input v-bind:value="value" v-on:input="updateValue" v-focus  /><slot></slot><slot name="radio"></slot><ul><slot name="item" v-for="item in items" :text="item"></slot></ul></div>`,
         props: ['value'],
         data: function () {
             return {
@@ -86,6 +96,13 @@
         methods: {
             updateValue: function (e) {
                 this.$emit('input', e.target.value);
+            }
+        },
+        directives: {
+            focus: {
+                inserted: function (el) {
+                    el.focus();
+                }
             }
         }
     });
@@ -99,8 +116,29 @@
     Vue.component('helloWorld', {
         template: '#hello'
     });
+    Vue.component('heading', {
+        render: function (createElement) {
+            return createElement('h' + this.level,  this.$slots.default);
+        },
+        props: {
+            level: {
+                require: true,
+                type: Number
+            }
+        }
+    });
     var vm = new Vue({
         el: '#app',
+        mixins: [{
+            data: function () {
+                return {
+                    obj2: {
+                        text: '3',
+                        background: 'blue'
+                    }
+                }
+            }
+        }],
         data: {
             color: 'green',
             num: '1',
@@ -110,7 +148,8 @@
             },
             showNum: '',
             changeNum: 'default',
-            myhome: 'home'
+            myhome: 'home',
+            animation: true
         },
         methods: {
             showDetail: function (data) {
@@ -128,6 +167,9 @@
             posts: {
                 template: '<h1>posts</h1>'
             }
+        },
+        created: function () {
+            console.log(this);
         }
     });
     console.log(vm.$refs.blueCircle);
